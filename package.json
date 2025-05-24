@@ -16,6 +16,7 @@
     "html2canvas": "^1.4.1",
     "next": "15.1.8",
     "next-cloudinary": "^6.16.0",
+    "qrcode": "^1.5.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "uploadthing": "^7.7.2"
@@ -24,6 +25,7 @@
     "@eslint/eslintrc": "^3",
     "@types/formidable": "^3.4.5",
     "@types/node": "^20",
+    "@types/qrcode": "^1.5.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "autoprefixer": "^10.4.21",

@@ -2,6 +2,7 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
 import html2canvas from 'html2canvas';
+import UPIQRCode from '../../../components/CreateQR';
 
 const Page2 = () => {
   const router = useRouter();
@@ -10,6 +11,9 @@ const Page2 = () => {
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
+  const [shortenedUrl, setShortenedUrl] = useState<string | null>(null);
+  const [isShortening, setIsShortening] = useState(false);
+  const [showQR, setShowQR] = useState(false);
   const tableRef = useRef<HTMLTableElement>(null);
 
   useEffect(() => {
@@ -52,7 +56,7 @@ const Page2 = () => {
         
         // Create a download link
         const link = document.createElement('a');
-        link.download = 'bill.png';
+        // link.download = 'bill.png';
         link.href = image;
         link.click();
         
@@ -93,17 +97,79 @@ const Page2 = () => {
     }
   };
 
+  const shortenUrl = async (longUrl: string) => {
+    try {
+      setIsShortening(true);
+      const response = await fetch('/api/shortenlink', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ longUrl }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to shorten URL');
+      }
+
+      const data = await response.json();
+      setShortenedUrl(data.shortUrl);
+      return data.shortUrl;
+    } catch (error) {
+      console.error('Error shortening URL:', error);
+      alert('Failed to shorten URL. Please try again.');
+      return null;
+    } finally {
+      setIsShortening(false);
+    }
+  };
+
   const handleImageUpload = async () => {
     const imageData = await convertTableToImage();
     if (imageData) {
       const cloudinaryUrl = await uploadToCloudinary(imageData);
       if (cloudinaryUrl) {
-        alert('Image uploaded successfully!');
+        // Automatically shorten the URL after successful upload
+        await shortenUrl(cloudinaryUrl);
+        alert('Image uploaded and URL shortened successfully!');
       }
     }
   };
 
 // create QR code 
+
+  const handleGenerateQR = async () => {
+    try {
+      // Step 1: Convert table to image
+      const imageData = await convertTableToImage();
+      if (!imageData) {
+        alert('Failed to generate image from table');
+        return;
+      }
+
+      // Step 2: Upload to Cloudinary
+      const cloudinaryUrl = await uploadToCloudinary(imageData);
+      if (!cloudinaryUrl) {
+        alert('Failed to upload image to Cloudinary');
+        return;
+      }
+
+      // Step 3: Shorten URL
+      const shortUrl = await shortenUrl(cloudinaryUrl);
+      if (!shortUrl) {
+        alert('Failed to shorten URL');
+        return;
+      }
+
+      // Step 4: Show QR code
+      setShowQR(true);
+      alert('QR code generated successfully!');
+    } catch (error) {
+      console.error('Error in QR generation process:', error);
+      alert('Failed to generate QR code. Please try again.');
+    }
+  };
+
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-4">Generated Bill</h2>
@@ -134,12 +200,9 @@ const Page2 = () => {
       <div className="mt-6 space-x-4">
         <button
           className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          onClick={() => {
-            // Placeholder for QR code creation logic
-            alert('QR code creation coming soon!');
-          }}
+          onClick={handleGenerateQR}
         >
-          Create QR
+          Generate QR
         </button>
         <button
           className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700"
@@ -150,22 +213,59 @@ const Page2 = () => {
         <button
           className="px-6 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 disabled:opacity-50"
           onClick={handleImageUpload}
-          disabled={isUploading}
+          disabled={isUploading || isShortening}
         >
-          {isUploading ? 'Uploading...' : 'Upload to Cloudinary'}
+          {isUploading ? 'Uploading...' : isShortening ? 'Shortening URL...' : 'Upload to Cloudinary'}
         </button>
       </div>
-      {uploadedUrl && (
-        <div className="mt-4">
-          <p className="text-sm text-gray-600">Image uploaded successfully!</p>
-          <a 
-            href={uploadedUrl} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="text-blue-600 hover:underline"
-          >
-            View uploaded image
-          </a>
+      {(uploadedUrl || shortenedUrl) && (
+        <div className="mt-4 space-y-2">
+          {uploadedUrl && (
+            <div>
+              <p className="text-sm text-gray-600">Original URL:</p>
+              <a 
+                href={uploadedUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:underline break-all"
+              >
+                {uploadedUrl}
+              </a>
+            </div>
+          )}
+          {shortenedUrl && (
+            <div>
+              <p className="text-sm text-gray-600">Shortened URL:</p>
+              <a 
+                href={shortenedUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-green-600 hover:underline"
+              >
+                {shortenedUrl}
+              </a>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(shortenedUrl);
+                  alert('URL copied to clipboard!');
+                }}
+                className="ml-2 px-3 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300"
+              >
+                Copy
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+      {showQR && shortenedUrl && (
+        <div className="mt-6 p-4 border rounded-lg bg-white shadow-sm">
+          <UPIQRCode
+            upiId="kevinkrahul1878-3@okicici" // Replace with actual UPI ID
+            name="Kevin Rahul" // Replace with actual vendor name
+            // amount={selectedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)}
+            amount={1}
+            note={`Bill Link: ${shortenedUrl}`}
+          />
         </div>
       )}
     </div>

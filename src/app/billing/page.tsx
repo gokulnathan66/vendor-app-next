@@ -53,13 +53,6 @@ const Page2 = () => {
         
         // Convert canvas to image
         const image = canvas.toDataURL('image/png');
-        
-        // Create a download link
-        const link = document.createElement('a');
-        // link.download = 'bill.png';
-        link.href = image;
-        link.click();
-        
         return image;
       } catch (error) {
         console.error('Error converting table to image:', error);
@@ -68,6 +61,17 @@ const Page2 = () => {
     }
     return null;
   };
+
+  const handleDownloadImage = async () => {
+    const imageData = await convertTableToImage();
+    if (imageData) {
+      const link = document.createElement('a');
+      link.download = 'bill.png';
+      link.href = imageData;
+      link.click();
+    }
+  };
+
 // upload image 
 
   const uploadToCloudinary = async (imageData: string) => {
@@ -100,7 +104,9 @@ const Page2 = () => {
   const shortenUrl = async (longUrl: string) => {
     try {
       setIsShortening(true);
-      const response = await fetch('/api/shortenlink', {
+      console.log('Sending URL to shorten:', longUrl);
+      
+      const response = await fetch('/api/shortentinly', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -108,16 +114,22 @@ const Page2 = () => {
         body: JSON.stringify({ longUrl }),
       });
 
+      const data = await response.json();
+      console.log('Shorten URL response:', data);
+
       if (!response.ok) {
-        throw new Error('Failed to shorten URL');
+        throw new Error(data.error || 'Failed to shorten URL');
       }
 
-      const data = await response.json();
+      if (!data.shortUrl) {
+        throw new Error('No shortened URL received');
+      }
+
       setShortenedUrl(data.shortUrl);
       return data.shortUrl;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error shortening URL:', error);
-      alert('Failed to shorten URL. Please try again.');
+      alert(`Failed to shorten URL: ${error.message || 'Unknown error'}`);
       return null;
     } finally {
       setIsShortening(false);
@@ -206,7 +218,7 @@ const Page2 = () => {
         </button>
         <button
           className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-          onClick={convertTableToImage}
+          onClick={handleDownloadImage}
         >
           Download as Image
         </button>

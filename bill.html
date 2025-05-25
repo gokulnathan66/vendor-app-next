@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Invoice</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+      background: #f9f9f9;
+    }
+    .invoice-box {
+      max-width: 800px;
+      margin: auto;
+      padding: 30px;
+      background: #fff;
+      border: 1px solid #eee;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .header img {
+      width: 120px;
+    }
+    h1 {
+      font-size: 24px;
+      margin: 0;
+    }
+    .info {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+    }
+    .info div {
+      width: 45%;
+    }
+    .info strong {
+      display: block;
+      margin-bottom: 10px;
+    }
+    .meta {
+      margin-top: 20px;
+    }
+    .meta div {
+      margin-bottom: 5px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+    }
+    table th, table td {
+      border: 1px solid #ccc;
+      padding: 12px;
+      text-align: center;
+    }
+    table th {
+      background-color: #f0f0f0;
+    }
+    .total {
+      text-align: right;
+      margin-top: 20px;
+      font-size: 16px;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 12px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <div class="invoice-box">
+    <div class="header">
+      <img src="https://via.placeholder.com/120x60.png?text=Company+Logo" alt="Company Logo">
+      <h1>INVOICE</h1>
+    </div>
+
+    <div class="info">
+      <div>
+        <strong>From:</strong>
+        ABC Technologies Pvt. Ltd.<br>
+        123, Business Street<br>
+        Tech City, India<br>
+        support@abctech.com
+      </div>
+      <div>
+        <strong>To:</strong>
+        John Doe<br>
+        789, Residential Lane<br>
+        Suburb Town, India<br>
+        john@example.com
+      </div>
+    </div>
+
+    <div class="meta">
+      <div><strong>Invoice #:</strong> INV-2025-001</div>
+      <div><strong>Date:</strong> May 25, 2025</div>
+      <div><strong>Due Date:</strong> June 5, 2025</div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Description</th>
+          <th>Qty</th>
+          <th>Unit Price</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Product A</td>
+          <td>Web Hosting (1 Year)</td>
+          <td>1</td>
+          <td>₹3,000</td>
+          <td>₹3,000</td>
+        </tr>
+        <tr>
+          <td>Product B</td>
+          <td>Domain Registration (.com)</td>
+          <td>1</td>
+          <td>₹900</td>
+          <td>₹900</td>
+        </tr>
+        <tr>
+          <td>Product C</td>
+          <td>SSL Certificate</td>
+          <td>1</td>
+          <td>₹1,200</td>
+          <td>₹1,200</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="total">
+      <strong>Grand Total: ₹5,100</strong>
+    </div>
+
+    <div class="footer">
+      Thank you for your business!<br>
+      If you have any questions, please contact support@abctech.com
+    </div>
+  </div>
+</body>
+</html>

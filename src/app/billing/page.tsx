@@ -43,23 +43,32 @@ const Page2 = () => {
 // table create 
 
   const convertTableToImage = async () => {
-    if (tableRef.current) {
-      try {
-        const canvas = await html2canvas(tableRef.current, {
-          scale: 2, // Higher scale for better quality
-          backgroundColor: '#ffffff',
-          logging: false,
-        });
-        
-        // Convert canvas to image
-        const image = canvas.toDataURL('image/png');
-        return image;
-      } catch (error) {
-        console.error('Error converting table to image:', error);
-        return null;
+    try {
+      // Get the HTML element containing the invoice
+      const element = document.querySelector('.invoice-container') as HTMLElement;
+      if (!element) {
+        throw new Error('Invoice element not found');
       }
+
+      // Create canvas with high quality settings
+      const canvas = await html2canvas(element, {
+        scale: 2, // Higher resolution
+        useCORS: true, // Handle cross-origin images
+        backgroundColor: '#ffffff',
+        logging: false,
+        width: element.scrollWidth,
+        height: element.scrollHeight,
+        windowWidth: element.scrollWidth,
+        windowHeight: element.scrollHeight
+      });
+
+      // Convert canvas to PNG image
+      const image = canvas.toDataURL('image/png', 1.0);
+      return image;
+    } catch (error) {
+      console.error('Error converting invoice to image:', error);
+      return null;
     }
-    return null;
   };
 
   const handleDownloadImage = async () => {
@@ -188,26 +197,67 @@ const Page2 = () => {
       {selectedItems.length === 0 ? (
         <div>No items found.</div>
       ) : (
-        <table ref={tableRef} className="w-full table-auto bg-white shadow-md rounded-lg">
-          <thead className="bg-gray-200">
-            <tr>
-              <th className="px-4 py-2 text-left">#</th>
-              <th className="px-4 py-2 text-left">Item Name</th>
-              <th className="px-4 py-2 text-left">Quantity</th>
-              <th className="px-4 py-2 text-left">Price</th>
-            </tr>
-          </thead>
-          <tbody>
-            {selectedItems.map((item, index) => (
-              <tr key={index} className="border-t">
-                <td className="px-4 py-2">{index + 1}</td>
-                <td className="px-4 py-2">{item.name}</td>
-                <td className="px-4 py-2">{item.quantity}</td>
-                <td className="px-4 py-2">{item.price}</td>
+        <div className="invoice-container max-w-4xl mx-auto bg-white p-8 shadow-lg rounded-lg">
+          <div className="flex justify-between items-center mb-8">
+            <img src="https://via.placeholder.com/120x60.png?text=Company+Logo" alt="Company Logo" className="w-32" />
+            <h1 className="text-2xl font-bold">INVOICE</h1>
+          </div>
+
+          <div className="grid grid-cols-2 gap-8 mb-8">
+            <div>
+              <strong className="block mb-2">From:</strong>
+              ABC Technologies Pvt. Ltd.<br />
+              123, Business Street<br />
+              Tech City, India<br />
+              support@abctech.com
+            </div>
+            <div>
+              <strong className="block mb-2">To:</strong>
+              John Doe<br />
+              789, Residential Lane<br />
+              Suburb Town, India<br />
+              john@example.com
+            </div>
+          </div>
+
+          <div className="mb-8">
+            <div className="mb-2"><strong>Invoice #:</strong> INV-{new Date().getFullYear()}-{Math.floor(Math.random() * 1000).toString().padStart(3, '0')}</div>
+            <div className="mb-2"><strong>Date:</strong> {new Date().toLocaleDateString()}</div>
+            <div><strong>Due Date:</strong> {new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toLocaleDateString()}</div>
+          </div>
+
+          <table ref={tableRef} className="w-full border-collapse mb-8">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="border border-gray-300 p-3 text-left">Item</th>
+                <th className="border border-gray-300 p-3 text-left">Description</th>
+                <th className="border border-gray-300 p-3 text-center">Qty</th>
+                <th className="border border-gray-300 p-3 text-right">Unit Price</th>
+                <th className="border border-gray-300 p-3 text-right">Total</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {selectedItems.map((item, index) => (
+                <tr key={index} className="border-t border-gray-300">
+                  <td className="border border-gray-300 p-3">Product {String.fromCharCode(65 + index)}</td>
+                  <td className="border border-gray-300 p-3">{item.name}</td>
+                  <td className="border border-gray-300 p-3 text-center">{item.quantity}</td>
+                  <td className="border border-gray-300 p-3 text-right">₹{item.price.toLocaleString()}</td>
+                  <td className="border border-gray-300 p-3 text-right">₹{(item.price * item.quantity).toLocaleString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <div className="text-right text-lg font-bold mb-8">
+            Grand Total: ₹{selectedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0).toLocaleString()}
+          </div>
+
+          <div className="text-center text-sm text-gray-600">
+            Thank you for your business!<br />
+            If you have any questions, please contact support@abctech.com
+          </div>
+        </div>
       )}
       <div className="mt-6 space-x-4">
         <button

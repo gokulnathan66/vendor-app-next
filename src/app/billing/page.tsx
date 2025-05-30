@@ -234,20 +234,20 @@ const Page2 = () => {
                 <th className="border border-gray-300 p-3 text-center">Qty</th>
                 <th className="border border-gray-300 p-3 text-right">Unit Price</th>
                 <th className="border border-gray-300 p-3 text-right">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {selectedItems.map((item, index) => (
+            </tr>
+          </thead>
+          <tbody>
+            {selectedItems.map((item, index) => (
                 <tr key={index} className="border-t border-gray-300">
                   <td className="border border-gray-300 p-3">Product {String.fromCharCode(65 + index)}</td>
                   <td className="border border-gray-300 p-3">{item.name}</td>
                   <td className="border border-gray-300 p-3 text-center">{item.quantity}</td>
                   <td className="border border-gray-300 p-3 text-right">₹{item.price.toLocaleString()}</td>
                   <td className="border border-gray-300 p-3 text-right">₹{(item.price * item.quantity).toLocaleString()}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+              </tr>
+            ))}
+          </tbody>
+        </table>
 
           <div className="text-right text-lg font-bold mb-8">
             Grand Total: ₹{selectedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0).toLocaleString()}
@@ -306,15 +306,15 @@ const Page2 = () => {
               >
                 {shortenedUrl}
               </a>
-              <button
-                onClick={() => {
+      <button
+        onClick={() => {
                   navigator.clipboard.writeText(shortenedUrl);
                   alert('URL copied to clipboard!');
-                }}
+        }}
                 className="ml-2 px-3 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300"
-              >
+      >
                 Copy
-              </button>
+      </button>
             </div>
           )}
         </div>

@@ -11,6 +11,7 @@
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "@uploadthing/react": "^7.3.1",
+    "assemblyai": "^4.12.2",
     "axios": "^1.9.0",
     "cloudinary": "^2.6.1",
     "formidable": "^3.5.4",

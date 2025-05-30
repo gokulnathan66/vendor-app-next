@@ -30,7 +30,8 @@ export default function AudioProcessor({
       onStatusUpdate("Transcribing in ...");
       const transcriptResponse = await client.transcripts.transcribe({
         audio: uploadUrl,
-        speech_model: "universal",
+        speech_model: "nano",
+        language_code: "ta",
       });
 
       console.log("Transcription response:", transcriptResponse);
